@@ -1,9 +1,10 @@
-package com.mevenk.timestampdateconverter.utility;
+package mevenk.timestampdateconverter.utility;
 
 import java.awt.Button;
 import java.awt.Dimension;
 import java.awt.EventQueue;
 import java.awt.Toolkit;
+import java.awt.Window.Type;
 import java.awt.datatransfer.StringSelection;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -16,19 +17,37 @@ import javax.swing.JOptionPane;
 import javax.swing.JTextField;
 import javax.swing.SwingConstants;
 
+/**
+ * The Class TimestampDateConverter.
+ */
 public class TimestampDateConverter {
 
+	/** The timestamp date converter frame. */
 	private JFrame timestampDateConverterFrame;
+
+	/** The timestamp text field. */
 	private JTextField timestampTextField;
+
+	/** The simple date format text field. */
 	private JTextField simpleDateFormatTextField;
+
+	/** The to timestamp button. */
 	private Button toTimestampButton;
+
+	/** The date text field. */
 	private JTextField dateTextField;
+
+	/** The copy date to clipboard button. */
 	private JButton copyDateToClipboardButton;
 
+	/** The Constant lineSeparator. */
 	private final static String lineSeparator = System.lineSeparator();
 
 	/**
 	 * Launch the application.
+	 *
+	 * @param args
+	 *            the arguments
 	 */
 	public static void main(String[] args) {
 		EventQueue.invokeLater(new Runnable() {
@@ -59,6 +78,8 @@ public class TimestampDateConverter {
 		timestampDateConverterFrame.setTitle("Timestamp/Date Converter");
 		timestampDateConverterFrame.getContentPane().setEnabled(false);
 		timestampDateConverterFrame.setResizable(false);
+		timestampDateConverterFrame.setType(Type.UTILITY);
+		timestampDateConverterFrame.setAlwaysOnTop(true);
 		timestampDateConverterFrame.setBounds(100, 100, 500, 300);
 		timestampDateConverterFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		timestampDateConverterFrame.getContentPane().setLayout(null);
@@ -88,10 +109,12 @@ public class TimestampDateConverter {
 								new SimpleDateFormat(simpleDateFormatString).format(Long.parseLong(timestampString)));
 
 					} else {
-						JOptionPane.showMessageDialog(timestampDateConverterFrame, "Invalid Inputs !!", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(timestampDateConverterFrame, "Invalid Inputs !!", "Error",
+								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (Exception exception) {
-					JOptionPane.showMessageDialog(timestampDateConverterFrame, "Error!!" + lineSeparator, "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(timestampDateConverterFrame, "Error!!" + lineSeparator, "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
@@ -113,10 +136,12 @@ public class TimestampDateConverter {
 								.toString(new SimpleDateFormat(simpleDateFormatString).parse(dateString).getTime()));
 
 					} else {
-						JOptionPane.showMessageDialog(timestampDateConverterFrame, "Invalid Inputs !!", "Error", JOptionPane.ERROR_MESSAGE);
+						JOptionPane.showMessageDialog(timestampDateConverterFrame, "Invalid Inputs !!", "Error",
+								JOptionPane.ERROR_MESSAGE);
 					}
 				} catch (Exception exception) {
-					JOptionPane.showMessageDialog(timestampDateConverterFrame, "Error!!" + lineSeparator, "Error", JOptionPane.ERROR_MESSAGE);
+					JOptionPane.showMessageDialog(timestampDateConverterFrame, "Error!!" + lineSeparator, "Error",
+							JOptionPane.ERROR_MESSAGE);
 				}
 
 			}
@@ -174,11 +199,19 @@ public class TimestampDateConverter {
 		timestampDateConverterFrame.getContentPane().add(lblDate);
 
 		Dimension screenDimension = Toolkit.getDefaultToolkit().getScreenSize();
-		timestampDateConverterFrame.setLocation(screenDimension.width / 2 - timestampDateConverterFrame.getSize().width / 2,
+		timestampDateConverterFrame.setLocation(
+				screenDimension.width / 2 - timestampDateConverterFrame.getSize().width / 2,
 				screenDimension.height / 2 - timestampDateConverterFrame.getSize().height / 2);
 
 	}
 
+	/**
+	 * Valid inputs.
+	 *
+	 * @param strings
+	 *            the strings
+	 * @return true, if successful
+	 */
 	private boolean validInputs(String... strings) {
 		for (String currentString : strings) {
 			if (currentString.isEmpty())
