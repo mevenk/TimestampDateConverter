@@ -56,12 +56,15 @@ public class TimestampDateConverter {
 
 	private JLabel lblRunningclock;
 
+	private JLabel labelRunningClockTimestamp;
+
 	/** The Constant lineSeparator. */
 	private final static String lineSeparator = System.lineSeparator();
 
-	private static final SimpleDateFormat SIMPLE_DATE_FORMAT_RUNNING_CLOCK = new SimpleDateFormat(
-			"dd/MM/yyyy HH:mm:ss,SSS");
-	private JLabel labelRunningClockTimestamp;
+	private static final Date DATE_INITIAL = new Date();
+
+	private static final SimpleDateFormat SIMPLE_DATE_FORMAT_DEFAULT = new SimpleDateFormat(
+			"E, dd/MM/yyyy HH:mm:ss,SSS");
 
 	/**
 	 * Launch the application.
@@ -112,13 +115,15 @@ public class TimestampDateConverter {
 				screenDimension.width / 2 - timestampDateConverterFrame.getSize().width / 2,
 				screenDimension.height / 2 - timestampDateConverterFrame.getSize().height / 2);
 
-		timestampTextField = new JTextField();
+		timestampTextField = new JTextField(String.valueOf(DATE_INITIAL.getTime()));
+		timestampTextField.setHorizontalAlignment(SwingConstants.CENTER);
 		timestampTextField.setToolTipText("Timestamp in millis");
-		timestampTextField.setBounds(10, 135, 150, 40);
+		timestampTextField.setBounds(10, 135, 175, 40);
 		timestampDateConverterFrame.getContentPane().add(timestampTextField);
 		timestampTextField.setColumns(10);
 
-		simpleDateFormatTextField = new JTextField();
+		simpleDateFormatTextField = new JTextField(SIMPLE_DATE_FORMAT_DEFAULT.toPattern());
+		simpleDateFormatTextField.setHorizontalAlignment(SwingConstants.CENTER);
 		simpleDateFormatTextField.setToolTipText("Date + Time  Recommended");
 		simpleDateFormatTextField.setColumns(10);
 		simpleDateFormatTextField.setBounds(189, 42, 175, 40);
@@ -177,10 +182,11 @@ public class TimestampDateConverter {
 		toTimestampButton.setBounds(211, 156, 125, 50);
 		timestampDateConverterFrame.getContentPane().add(toTimestampButton);
 
-		dateTextField = new JTextField();
+		dateTextField = new JTextField(SIMPLE_DATE_FORMAT_DEFAULT.format(DATE_INITIAL));
+		dateTextField.setHorizontalAlignment(SwingConstants.CENTER);
 		dateTextField.setToolTipText("Date");
 		dateTextField.setColumns(10);
-		dateTextField.setBounds(399, 135, 150, 40);
+		dateTextField.setBounds(374, 135, 175, 40);
 		timestampDateConverterFrame.getContentPane().add(dateTextField);
 
 		JButton copyTimestampToClipboardButton = new JButton("Copy to Clipboard");
@@ -195,7 +201,7 @@ public class TimestampDateConverter {
 
 			}
 		});
-		copyTimestampToClipboardButton.setBounds(10, 200, 150, 30);
+		copyTimestampToClipboardButton.setBounds(25, 200, 150, 30);
 		timestampDateConverterFrame.getContentPane().add(copyTimestampToClipboardButton);
 
 		copyDateToClipboardButton = new JButton("Copy to Clipboard");
@@ -208,7 +214,7 @@ public class TimestampDateConverter {
 
 			}
 		});
-		copyDateToClipboardButton.setBounds(399, 200, 150, 30);
+		copyDateToClipboardButton.setBounds(387, 200, 150, 30);
 		timestampDateConverterFrame.getContentPane().add(copyDateToClipboardButton);
 
 		JLabel labelDateFormat = new JLabel("Date Format");
@@ -218,12 +224,12 @@ public class TimestampDateConverter {
 
 		JLabel lblTimestamp = new JLabel("Timestamp(millis)");
 		lblTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
-		lblTimestamp.setBounds(25, 100, 110, 20);
+		lblTimestamp.setBounds(35, 100, 110, 20);
 		timestampDateConverterFrame.getContentPane().add(lblTimestamp);
 
 		JLabel lblDate = new JLabel("DATE");
 		lblDate.setHorizontalAlignment(SwingConstants.CENTER);
-		lblDate.setBounds(435, 100, 75, 20);
+		lblDate.setBounds(425, 100, 75, 20);
 		timestampDateConverterFrame.getContentPane().add(lblDate);
 
 		lblRunningclock = new JLabel("");
@@ -231,8 +237,7 @@ public class TimestampDateConverter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				lblRunningclock.setBackground(Color.GRAY);
-				runningClock.cancel(false);
+				stopRunningClock(lblRunningclock);
 			}
 
 			@Override
@@ -240,9 +245,7 @@ public class TimestampDateConverter {
 				if (contextMenu.isShowing()) {
 					return;
 				}
-				runningClock = new RunningClock();
-				runningClock.execute();
-				lblRunningclock.setBackground(null);
+				resumeRunningClock(lblRunningclock);
 			}
 		});
 		lblRunningclock.setBounds(370, 25, 175, 40);
@@ -279,8 +282,7 @@ public class TimestampDateConverter {
 
 			@Override
 			public void mouseEntered(MouseEvent e) {
-				labelRunningClockTimestamp.setBackground(Color.GRAY);
-				runningClock.cancel(false);
+				stopRunningClock(labelRunningClockTimestamp);
 			}
 
 			@Override
@@ -288,9 +290,7 @@ public class TimestampDateConverter {
 				if (contextMenu2.isShowing()) {
 					return;
 				}
-				runningClock = new RunningClock();
-				runningClock.execute();
-				labelRunningClockTimestamp.setBackground(null);
+				resumeRunningClock(labelRunningClockTimestamp);
 			}
 		});
 		labelRunningClockTimestamp.setHorizontalAlignment(SwingConstants.CENTER);
@@ -323,6 +323,17 @@ public class TimestampDateConverter {
 		});
 		contextMenu2.add(copyButton2);
 
+	}
+
+	private void stopRunningClock(JLabel label) {
+		label.setBackground(Color.GRAY);
+		runningClock.cancel(true);
+	}
+
+	private void resumeRunningClock(JLabel label) {
+		runningClock = new RunningClock();
+		runningClock.execute();
+		label.setBackground(null);
 	}
 
 	/**
@@ -362,6 +373,8 @@ public class TimestampDateConverter {
 
 	class RunningClock extends SwingWorker<Void, Void> {
 
+		private final SimpleDateFormat simpleDateFormatRunningClock = new SimpleDateFormat("dd/MM/yyyy HH:mm:ss,SSS");
+
 		boolean keepClockRunning = true;
 
 		@Override
@@ -370,7 +383,7 @@ public class TimestampDateConverter {
 
 			while (keepClockRunning) {
 				date = new Date();
-				lblRunningclock.setText(SIMPLE_DATE_FORMAT_RUNNING_CLOCK.format(date));
+				lblRunningclock.setText(simpleDateFormatRunningClock.format(date));
 				labelRunningClockTimestamp.setText(String.valueOf(date.getTime()));
 			}
 			return null;
